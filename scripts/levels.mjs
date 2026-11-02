@@ -310,3 +310,15 @@ export function sameSrc(a, b) {
   const x = n(a), y = n(b);
   return !!x && !!y && (x === y || x.endsWith("/" + y) || y.endsWith("/" + x));
 }
+
+/**
+ * Elevação certa de um token que foi para outro andar: se ficou fora da faixa do andar novo
+ * (ex.: subiu a escada e continuou com 0 m), vai para o chão do andar. null = não precisa mudar.
+ */
+export function elevationForLevel(elevation, level, fallbackHeight = 3) {
+  if (!level) return null;
+  const raw = level?.elevation?.top;
+  const e = Number(elevation) || 0, b = bottomOf(level);
+  const t = raw === null || raw === undefined || raw === "" || !Number.isFinite(Number(raw)) ? Infinity : topOf(level, fallbackHeight);
+  return e < b - 1e-6 || e >= t - 1e-6 ? b : null;
+}

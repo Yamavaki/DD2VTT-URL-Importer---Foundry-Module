@@ -1,6 +1,13 @@
-# DD2VTT URL Importer 1.9.3 + mod "Exportar para Foundry (Nauren)" 1.0.5 — testes
+# DD2VTT URL Importer 1.9.4 + mod "Exportar para Foundry (Nauren)" 1.0.5 — testes
 
 Ciclo atual: andares (visão entre andares, andares de cima em fade, iluminação global), escadas e elevadores. Marque o que passou e mande o erro do console (F12) do que falhar.
+
+## 1.9.4 — token subia a escada e continuava com 0 m
+
+- [ ] Abra a cena: tokens que ficaram presos com a elevação errada (aparecendo "-3 m" no Andar 1) vão sozinhos para 0 m do andar (o mestre precisa estar conectado).
+- [ ] Suba a escada: o token chega no Andar 1 com **0 m** (elevação 3 de verdade) e fica **por cima** da imagem do Andar 1.
+- [ ] Desça a escada: volta para o Térreo com 0 m.
+- [ ] Vendo o Térreo, o Andar 1 continua sumindo quando um token seu do Térreo passa embaixo (e não por causa de um token que já está no Andar 1).
 
 ## 1.9.3 — portas do andar de cima aparecendo no de baixo
 

@@ -7,6 +7,7 @@ import { ArtPicker, DoorStyleTool } from "./gallery.mjs";
 import { SceneLightsTool } from "./lights.mjs";
 import { FloorsManager, installLevelHUD, globalLightData } from "./floors.mjs";
 import { installUpperFade, debugUpperFade } from "./upperfade.mjs";
+import { installTokenLevelFix } from "./tokenlevel.mjs";
 import { sightLists } from "./levels.mjs";
 
 const escHTML = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
@@ -914,7 +915,7 @@ Hooks.on("renderWallConfig", (app, html) => {
   form.prepend(box);
 });
 
-Hooks.once("init", () => { registerSettings(); installLevelHUD(); installUpperFade(); });
+Hooks.once("init", () => { registerSettings(); installLevelHUD(); installUpperFade(); installTokenLevelFix(); });
 Hooks.once("setup", () => installNoGapPatch());
 
 // Botão "Estilo de portas e janelas" na barra da camada de Paredes.

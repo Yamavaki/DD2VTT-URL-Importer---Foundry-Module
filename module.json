@@ -2,7 +2,7 @@
   "id": "dd2vtt-url-importer",
   "title": "DD2VTT URL Importer",
   "description": "Importa paredes, portas, janelas e luzes de arquivos .dd2vtt/.uvtt usando uma URL externa para a imagem do mapa, com reescala automática, múltiplos andares (Scene Levels do V14), portas e janelas animadas com artes escolhidas numa galeria ferramenta de estilo ajuste de raio das luzes da cena e gerenciador de andares com escadas, elevadores, quem vê quem entre andares (os de cima em fade) e iluminação global. Padrão: 1 quadrado = 1 metro.",
-  "version": "1.9.3",
+  "version": "1.9.4",
   "compatibility": {
     "minimum": "13",
     "verified": "14"
