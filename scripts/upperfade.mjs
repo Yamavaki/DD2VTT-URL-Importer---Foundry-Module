@@ -178,9 +178,8 @@ function tick() {
     }
     if (lb > vb) levelAlpha.set(level.id, Math.min(levelAlpha.get(level.id) ?? 1, st.a));
   }
-  // Andar de cima sem imagem desenhada (não está na visão do andar visto): as coisas dele somem também.
+  // Só mexe nas portas/tiles de um andar de cima quando a imagem dele foi achada na tela (senão o Foundry decide).
   if (!viewed || sceneLevelList().length < 2) return;
-  for (const l of sceneLevelList()) if (bottomOf(l) > vb && !levelAlpha.has(l.id)) levelAlpha.set(l.id, 0);
   applyToPlaceables(levelAlpha);
 }
 
@@ -246,6 +245,20 @@ export function debugUpperFade() {
     };
   });
   console.table(rows);
+  // Portas por andar: quantas existem, quantas têm arte na tela e se o módulo está mexendo nelas.
+  const lv = new Map(levels.map((l) => [l.id, l.name]));
+  const doors = {};
+  for (const w of canvas?.walls?.placeables ?? []) {
+    if (!w.document?.door) continue;
+    const k = idsOf(w.document).map((id) => lv.get(id) ?? id).join(", ") || "todos os andares";
+    const d = doors[k] ??= { portas: 0, comArteNaTela: 0, transparentes: 0, iconeEscondido: 0, mexidasPeloModulo: 0 };
+    d.portas++;
+    if (w.doorMesh) d.comArteNaTela++;
+    if (w.doorMesh && w.doorMesh.alpha < 0.99) d.transparentes++;
+    if (w.doorControl && w.doorControl.visible === false) d.iconeEscondido++;
+    if (placeState.get(w.doorMesh)?.touched || placeState.get(w.doorControl)?.hidden) d.mexidasPeloModulo++;
+  }
+  console.table(doors);
   console.log(`${MODULE_ID} | fade: andar visto = ${viewed?.name ?? "?"}; andares na cena = ${levels.length}; `
     + `levelTextures = ${canvas?.primary?.levelTextures?.length ?? "não existe"}; modo = ${setting("upperFade", "both")}`);
   return rows;

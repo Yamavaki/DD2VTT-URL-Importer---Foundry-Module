@@ -1,6 +1,14 @@
-# DD2VTT URL Importer 1.9.4 + mod "Exportar para Foundry (Nauren)" 1.0.5 — testes
+# DD2VTT URL Importer 1.9.5 + mod "Exportar para Foundry (Nauren)" 1.0.5 — testes
 
 Ciclo atual: andares (visão entre andares, andares de cima em fade, iluminação global), escadas e elevadores. Marque o que passou e mande o erro do console (F12) do que falhar.
+
+## 1.9.5 — portas do segundo andar sumindo
+
+- [ ] Importe os 2 andares e veja o **Andar 1**: as portas dele aparecem (arte e ícone).
+- [ ] Veja o **Térreo**: as portas do Andar 1 acompanham a imagem do Andar 1 (somem junto no fade) e o ícone delas fica escondido.
+- [ ] Volte para o Andar 1: portas e ícones de volta.
+- [ ] Se faltar porta: rode `game.modules.get("dd2vtt-url-importer").api.fadeDebug()` vendo o andar com problema e mande as **duas tabelas** (a segunda mostra as portas por andar).
+- [ ] Teste rápido: em Configurações do módulo, "Andar de cima: quando ele some" = **Nunca**. Se as portas voltarem com isso, o problema é o fade; se não, é a importação.
 
 ## 1.9.4 — token subia a escada e continuava com 0 m
 
