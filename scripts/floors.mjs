@@ -640,7 +640,7 @@ export class FloorsManager extends foundry.applications.api.ApplicationV2 {
           </span>` : ""}
         </div>
         ${rows || `<p class="ddi-hint">Esta cena ainda não tem andares.</p>`}
-        ${sorted.length > 1 ? `<p class="ddi-hint"><i class="fa-solid fa-arrow-up"></i> andar de cima: aparece por cima em fade e some quando o token passa embaixo (a imagem precisa ter fundo transparente fora da construção). <i class="fa-solid fa-arrow-down"></i> andar de baixo: aparece embaixo. Ver o outro andar também deixa os tokens se enxergarem entre andares.</p>` : ""}
+        ${sorted.length > 1 ? `<p class="ddi-hint"><i class="fa-solid fa-arrow-up"></i> andar de cima: aparece por cima em fade e some quando o token passa embaixo (a imagem precisa ter fundo transparente fora da construção). <i class="fa-solid fa-arrow-down"></i> andar de baixo: aparece embaixo. Atenção: ver outro andar mostra <b>tudo</b> dele (tokens, portas), mesmo onde existe chão no meio. Para andares fechados, use <b>Nenhum</b>.</p>` : ""}
         <p class="ddi-hint">Objetos novos entram no andar que você está vendo. Para mudar depois: botão <i class="fa-solid fa-layer-group"></i> no menu do objeto (clique direito), ou selecione e use <i class="fa-solid fa-arrow-right-to-bracket"></i> aqui.</p>
       </section>
 
@@ -665,9 +665,9 @@ export class FloorsManager extends foundry.applications.api.ApplicationV2 {
           <span class="ddi-input-icon"><i class="fa-solid fa-link"></i><input type="text" name="newSrc" placeholder="https://i.imgur.com/....png" autocomplete="off"></span></label>
         <label class="ddi-field"><span class="ddi-label">Paredes, portas e luzes (opcional)</span>
           <input type="file" name="newFile" accept=".dd2vtt,.uvtt,.json"></label>
-        <label class="ddf-check"><input type="checkbox" name="newSeeBelow" checked><span>Vê os andares de baixo</span></label>
-        <label class="ddf-check"><input type="checkbox" name="newSeeAbove" checked><span>Vê os andares de cima (em fade)</span></label>
-        <label class="ddf-check"><input type="checkbox" name="newSeenByOthers" checked><span>Os outros andares veem este</span></label>
+        <label class="ddf-check"><input type="checkbox" name="newSeeBelow"><span>Vê os andares de baixo</span></label>
+        <label class="ddf-check"><input type="checkbox" name="newSeeAbove"><span>Vê os andares de cima (em fade)</span></label>
+        <label class="ddf-check"><input type="checkbox" name="newSeenByOthers"><span>Os outros andares veem este</span></label>
         <div class="ddf-pending-actions"><button type="button" class="ddi-primary" data-action="addFloor"><i class="fa-solid fa-plus"></i> Criar andar</button></div>
       </details>
     </div>`;

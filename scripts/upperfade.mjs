@@ -180,7 +180,8 @@ function tick() {
   }
   // Só mexe nas portas/tiles de um andar de cima quando a imagem dele foi achada na tela (senão o Foundry decide).
   if (!viewed || sceneLevelList().length < 2) return;
-  applyToPlaceables(levelAlpha);
+  const below = new Set(sceneLevelList().filter((l) => bottomOf(l) < vb).map((l) => l.id));
+  applyToPlaceables(levelAlpha, below);
 }
 
 /** Ids dos andares de um objeto (vazio = todos). */
@@ -196,7 +197,9 @@ const placeState = new WeakMap();  // objeto de tela → { touched, ctl }
  * O ícone de abrir/fechar porta de um andar de cima some enquanto você vê um andar de baixo
  * (para ninguém abrir a porta de cima estando embaixo).
  */
-function applyToPlaceables(levelAlpha) {
+function applyToPlaceables(levelAlpha, below = new Set()) {
+  // Porta só de andares de baixo: o ícone some vendo de cima (ninguém abre a porta de baixo estando em cima).
+  const onlyBelow = (doc) => { const ids = idsOf(doc); return ids.length > 0 && ids.every((id) => below.has(id)); };
   const alphaFor = (doc) => {
     const ids = idsOf(doc);
     if (!ids.length) return null;                       // em todos os andares: não mexe
@@ -222,8 +225,9 @@ function applyToPlaceables(levelAlpha) {
     const ctl = w.doorControl;
     if (ctl) {
       const st = placeState.get(ctl) ?? { hidden: false };
-      if (a !== null) { ctl.visible = false; st.hidden = true; }
-      else if (a === null && st.hidden) { ctl.visible = true; st.hidden = false; }
+      const hide = a !== null || onlyBelow(w.document);
+      if (hide) { ctl.visible = false; st.hidden = true; }
+      else if (st.hidden) { ctl.visible = true; st.hidden = false; }
       placeState.set(ctl, st);
     }
   }

@@ -17,7 +17,7 @@ const DEFAULTS = {
   gridDistance: 1, gridUnits: "m", floorHeight: 3,
   lightsVisionOnly: true, lightAlpha: 0, lightExtra: 0,
   mergeDoors: true, frameInset: true, windowMode: "gm", lightWalls: "see",
-  seeBelow: true, seeAbove: true, globalLight: false
+  seeBelow: false, seeAbove: false, globalLight: false
 };
 
 /** Tenta abrir uma URL de imagem (não exige CORS). */
@@ -305,7 +305,7 @@ class DD2VTTImporter extends foundry.applications.api.ApplicationV2 {
           ${toggleHTML("seeBelow", d.seeBelow, "Andares de cima veem os de baixo", "Para varandas, mezaninos, vãos e pátios abertos.")}
           ${toggleHTML("seeAbove", d.seeAbove, "Andares de baixo veem os de cima, em fade",
             "O andar de cima aparece por cima (telhado, sacada) e some quando o token passa embaixo. A imagem do andar de cima precisa ter fundo transparente fora da construção.")}
-          <p class="ddi-hint">Dá para ajustar andar por andar no cartão de cada um, e depois em “Andares”. Ver o outro andar também deixa os tokens se enxergarem entre andares.</p>
+          <p class="ddi-hint">Deixe desligado no normal. Ver outro andar mostra <b>tudo</b> dele (tokens, portas), mesmo onde existe chão no meio — use só em vãos, mezaninos e pátios abertos. Dá para ajustar por andar no cartão de cada um e depois em “Andares”.</p>
         </div>
         <div class="ddi-floors">${floorCardHTML(0)}</div>
         <div class="ddi-floor-actions">

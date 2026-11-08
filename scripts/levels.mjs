@@ -322,3 +322,20 @@ export function elevationForLevel(elevation, level, fallbackHeight = 3) {
   const t = raw === null || raw === undefined || raw === "" || !Number.isFinite(Number(raw)) ? Infinity : topOf(level, fallbackHeight);
   return e < b - 1e-6 || e >= t - 1e-6 ? b : null;
 }
+
+/** Andar em que fica uma elevação (chão ≤ e < teto; o andar mais alto não tem teto). null = nenhum. */
+export function levelForElevation(levels, elevation) {
+  const sorted = levelsByHeight(levels);
+  const e = Number(elevation) || 0;
+  let found = null;
+  sorted.forEach((l, i) => {
+    const b = bottomOf(l);
+    const last = i === sorted.length - 1;
+    const raw = l?.elevation?.top;
+    const t = last && (raw === null || raw === undefined || raw === "" || !Number.isFinite(Number(raw))) ? Infinity
+      : (last ? Math.max(topOf(l), Infinity) : bottomOf(sorted[i + 1]));
+    if (e >= b - 1e-6 && e < t - 1e-6) found = l;
+  });
+  if (!found && sorted.length && e < bottomOf(sorted[0])) found = sorted[0];
+  return found;
+}
