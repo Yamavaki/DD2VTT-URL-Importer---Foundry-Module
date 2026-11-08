@@ -12,7 +12,20 @@ Importa mapas do Dungeondraft (`.dd2vtt` / `.uvtt`) para o Foundry VTT V14 usand
 Feito para usar junto com o mod do Dungeondraft **Exportar para Foundry (Nauren)**, que grava no `.dd2vtt` o nome do andar, a moldura de cada porta e as paredes "Allow Light".
 
 ## Instalar
-Copie a pasta para `Data/modules/dd2vtt-url-importer` (o `id` do módulo é `dd2vtt-url-importer`) e ative no mundo.
+No Foundry: **Configuração → Módulos complementares → Instalar módulo**, e cole no campo **URL do manifesto** (embaixo):
+
+```
+https://raw.githubusercontent.com/Yamavaki/DD2VTT-URL-Importer---Foundry-Module/main/module.json
+```
+
+(O link do repositório, terminado em `.git`, não serve: o Foundry precisa do link do `module.json`.)
+
+Manual: descompacte `dist/dd2vtt-url-importer.zip` em `Data/modules/dd2vtt-url-importer` e ative no mundo.
+
+## Publicar uma versão nova
+1. Suba o `version` no `module.json`.
+2. Rode `./build.sh` (gera `dist/dd2vtt-url-importer.zip`).
+3. Faça o commit e o push. O Foundry vê a versão nova pelo manifesto e oferece atualizar.
 
 ## Testes
 A lista do que conferir a cada versão está em `TESTES.md`.
