@@ -364,8 +364,23 @@ export function levelSyncPatch(levels, { single, doc, changes = null }) {
     const fixed = elevationForLevel(curElev, byId(curIds[0]));
     return fixed === null ? {} : { elevation: fixed };
   }
-  const hasLevel = key in changes, hasElev = "elevation" in changes;
-  if (hasLevel && hasElev) return {};
+  let hasLevel = key in changes;
+  const hasElev = "elevation" in changes;
+  if (hasLevel) {   // "mudou" para o mesmo andar = não mudou
+    const nv = single ? [levelId(changes.level)].filter(Boolean) : ids(changes.levels).map(levelId).filter(Boolean);
+    if (nv.length === curIds.length && nv.every((x) => curIds.includes(x))) {
+      hasLevel = false;
+      changes = { ...changes }; delete changes[key];
+    }
+  }
+  if (hasLevel && hasElev) {
+    // Os dois vieram juntos (ex.: o botão de andar do token manda o andar novo + a elevação antiga):
+    // se a elevação ficou fora do andar novo, ela vai para o chão dele.
+    const newIds = single ? [levelId(changes.level)].filter(Boolean) : ids(changes.levels).map(levelId).filter(Boolean);
+    if (newIds.length !== 1) return {};
+    const fixed = elevationForLevel(changes.elevation, byId(newIds[0]));
+    return fixed === null ? {} : { elevation: fixed };
+  }
   if (hasElev) {
     if (curIds.length > 1 || (!single && curIds.length === 0)) return {};
     const target = levelForElevation(sorted, changes.elevation);

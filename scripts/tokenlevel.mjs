@@ -13,6 +13,7 @@ const TYPES = [
 ];
 
 export function installTokenLevelFix() {
+  installAfterUpdate();
   for (const [type, single] of TYPES) {
     Hooks.on(`preCreate${type}`, (doc, data) => {
       const scene = doc.parent;
@@ -28,6 +29,21 @@ export function installTokenLevelFix() {
       Object.assign(changes, patch);
     });
   }
+}
+
+/**
+ * Rede de segurança: se o andar do token mudou por um caminho que não passou pela regra acima
+ * (ex.: movimento do V14 que grava o andar depois), quem fez a mudança acerta a elevação.
+ */
+function installAfterUpdate() {
+  Hooks.on("updateToken", (doc, changes, options, userId) => {
+    if (userId !== game.user?.id || !("level" in changes)) return;
+    const src = doc._source ?? doc;
+    const patch = levelSyncPatch(levelsOf(doc.parent), { single: true, doc: { level: src.level, elevation: src.elevation } });
+    if (patch.elevation !== undefined && patch.elevation !== src.elevation) {
+      doc.update({ elevation: patch.elevation }).catch((err) => console.warn("dd2vtt-url-importer | elevação do token", err));
+    }
+  });
 }
 
 /** Arruma a cena inteira: quem está em 1 andar com elevação fora dele vai para o chão do andar. */
