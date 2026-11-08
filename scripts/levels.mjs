@@ -339,3 +339,44 @@ export function levelForElevation(levels, elevation) {
   if (!found && sorted.length && e < bottomOf(sorted[0])) found = sorted[0];
   return found;
 }
+
+/**
+ * Andar e elevação andando juntos para qualquer objeto da cena (1.9.7).
+ *  single: true para Token (campo `level`, um andar só); false para quem tem `levels` (lista).
+ *  doc: { level | levels, elevation } atual (na criação, os dados novos); changes: o que está mudando (ou null na criação).
+ *  → patch ({} = nada a mudar).
+ * Regras:
+ *  - muda só a elevação → o andar vira o andar daquela altura (só se o objeto está em 1 andar);
+ *  - muda só o andar (ou está sendo criado num andar) → a elevação vai para o chão do andar se estiver fora dele;
+ *  - mudam os dois juntos, ou o objeto está em vários/todos os andares → não mexe.
+ */
+export function levelSyncPatch(levels, { single, doc, changes = null }) {
+  const sorted = levelsByHeight(levels);
+  if (sorted.length < 2) return {};
+  const ids = (v) => (v instanceof Set ? [...v] : Array.isArray(v) ? v : v ? [v] : []);
+  const levelId = (v) => (typeof v === "string" ? v : v?.id ?? v?._id ?? null);
+  const byId = (id) => sorted.find((l) => idOf(l) === id) ?? null;
+  const key = single ? "level" : "levels";
+  const curIds = single ? [levelId(doc?.level)].filter(Boolean) : ids(doc?.levels).map(levelId).filter(Boolean);
+  const curElev = Number(doc?.elevation) || 0;
+  if (!changes) {                                              // criação: o andar manda
+    if (curIds.length !== 1) return {};
+    const fixed = elevationForLevel(curElev, byId(curIds[0]));
+    return fixed === null ? {} : { elevation: fixed };
+  }
+  const hasLevel = key in changes, hasElev = "elevation" in changes;
+  if (hasLevel && hasElev) return {};
+  if (hasElev) {
+    if (curIds.length > 1 || (!single && curIds.length === 0)) return {};
+    const target = levelForElevation(sorted, changes.elevation);
+    if (!target || (curIds.length === 1 && curIds[0] === idOf(target))) return {};
+    return { [key]: single ? idOf(target) : [idOf(target)] };
+  }
+  if (hasLevel) {
+    const newIds = single ? [levelId(changes.level)].filter(Boolean) : ids(changes.levels).map(levelId).filter(Boolean);
+    if (newIds.length !== 1) return {};
+    const fixed = elevationForLevel(curElev, byId(newIds[0]));
+    return fixed === null ? {} : { elevation: fixed };
+  }
+  return {};
+}

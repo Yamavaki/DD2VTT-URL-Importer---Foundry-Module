@@ -1,3 +1,4 @@
+import { fixSceneElevations } from "./tokenlevel.mjs";
 import { MODULE_ID } from "./library.mjs";
 import {
   levelsByHeight, bottomOf, topOf, levelIdsOf, nextLevels, passageRegionData, levelAbove, nextFloorBottom,
@@ -467,7 +468,8 @@ export class FloorsManager extends foundry.applications.api.ApplicationV2 {
       goPassage: FloorsManager.#onGoPassage,
       deletePassage: FloorsManager.#onDeletePassage,
       addFloor: FloorsManager.#onAddFloor,
-      sightAll: FloorsManager.#onSightAll
+      sightAll: FloorsManager.#onSightAll,
+      fixElevations: FloorsManager.#onFixElevations
     }
   };
 
@@ -637,10 +639,11 @@ export class FloorsManager extends foundry.applications.api.ApplicationV2 {
             <button type="button" class="ddg-ghost" data-action="sightAll" data-mode="all" data-tooltip="Todos os andares veem todos (os de cima em fade)"><i class="fa-solid fa-eye"></i> Todos veem todos</button>
             <button type="button" class="ddg-ghost" data-action="sightAll" data-mode="below" data-tooltip="Só os andares de cima veem os de baixo"><i class="fa-solid fa-arrow-down"></i> Só para baixo</button>
             <button type="button" class="ddg-ghost" data-action="sightAll" data-mode="none" data-tooltip="Cada andar vê só ele mesmo"><i class="fa-solid fa-eye-slash"></i> Nenhum</button>
+            <button type="button" class="ddg-ghost" data-action="fixElevations" data-tooltip="Tokens, tiles, luzes, sons, desenhos e notas que estão num andar mas com a elevação fora dele vão para o chão do andar"><i class="fa-solid fa-arrows-up-down"></i> Acertar elevações</button>
           </span>` : ""}
         </div>
         ${rows || `<p class="ddi-hint">Esta cena ainda não tem andares.</p>`}
-        ${sorted.length > 1 ? `<p class="ddi-hint"><i class="fa-solid fa-arrow-up"></i> andar de cima: aparece por cima em fade e some quando o token passa embaixo (a imagem precisa ter fundo transparente fora da construção). <i class="fa-solid fa-arrow-down"></i> andar de baixo: aparece embaixo. Atenção: ver outro andar mostra <b>tudo</b> dele (tokens, portas), mesmo onde existe chão no meio. Para andares fechados, use <b>Nenhum</b>.</p>` : ""}
+        ${sorted.length > 1 ? `<p class="ddi-hint"><i class="fa-solid fa-arrow-up"></i> andar de cima: aparece por cima em fade e some quando o token passa embaixo (a imagem precisa ter fundo transparente fora da construção). <i class="fa-solid fa-arrow-down"></i> andar de baixo: aparece embaixo. A elevação manda no andar: um objeto em 3 m fica no andar que começa em 3 m. <b>Acertar elevações</b> arruma o que ficou fora do próprio andar.</p>` : ""}
         <p class="ddi-hint">Objetos novos entram no andar que você está vendo. Para mudar depois: botão <i class="fa-solid fa-layer-group"></i> no menu do objeto (clique direito), ou selecione e use <i class="fa-solid fa-arrow-right-to-bracket"></i> aqui.</p>
       </section>
 
@@ -665,9 +668,9 @@ export class FloorsManager extends foundry.applications.api.ApplicationV2 {
           <span class="ddi-input-icon"><i class="fa-solid fa-link"></i><input type="text" name="newSrc" placeholder="https://i.imgur.com/....png" autocomplete="off"></span></label>
         <label class="ddi-field"><span class="ddi-label">Paredes, portas e luzes (opcional)</span>
           <input type="file" name="newFile" accept=".dd2vtt,.uvtt,.json"></label>
-        <label class="ddf-check"><input type="checkbox" name="newSeeBelow"><span>Vê os andares de baixo</span></label>
-        <label class="ddf-check"><input type="checkbox" name="newSeeAbove"><span>Vê os andares de cima (em fade)</span></label>
-        <label class="ddf-check"><input type="checkbox" name="newSeenByOthers"><span>Os outros andares veem este</span></label>
+        <label class="ddf-check"><input type="checkbox" name="newSeeBelow" checked><span>Vê os andares de baixo</span></label>
+        <label class="ddf-check"><input type="checkbox" name="newSeeAbove" checked><span>Vê os andares de cima (em fade)</span></label>
+        <label class="ddf-check"><input type="checkbox" name="newSeenByOthers" checked><span>Os outros andares veem este</span></label>
         <div class="ddf-pending-actions"><button type="button" class="ddi-primary" data-action="addFloor"><i class="fa-solid fa-plus"></i> Criar andar</button></div>
       </details>
     </div>`;
@@ -761,6 +764,15 @@ export class FloorsManager extends foundry.applications.api.ApplicationV2 {
     try {
       await scene.updateEmbeddedDocuments("Level", updates);
     } catch (err) { console.error(err); ui.notifications.error(`Não deu para salvar: ${err.message}`); }
+    finally { this.#busy = false; this.render(); }
+  }
+
+  static async #onFixElevations() {
+    this.#busy = true;
+    try {
+      const n = await fixSceneElevations(this.scene);
+      ui.notifications.info(n ? `${n} objeto(s) foram para o chão do próprio andar.` : "Tudo certo: nada estava fora do próprio andar.");
+    } catch (err) { console.error(err); ui.notifications.error(`Não deu para acertar: ${err.message}`); }
     finally { this.#busy = false; this.render(); }
   }
 

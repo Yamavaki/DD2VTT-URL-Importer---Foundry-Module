@@ -1,6 +1,19 @@
-# DD2VTT URL Importer 1.9.6 + mod "Exportar para Foundry (Nauren)" 1.0.5 — testes
+# DD2VTT URL Importer 1.9.7 + mod "Exportar para Foundry (Nauren)" 1.0.5 — testes
 
 Ciclo atual: andares (visão entre andares, andares de cima em fade, iluminação global), escadas e elevadores. Marque o que passou e mande o erro do console (F12) do que falhar.
+
+## 1.9.7 — andares se veem de novo; a elevação manda no andar
+
+**Na cena que já existe:** em **Andares**, clique **Todos veem todos** e depois **Acertar elevações**.
+
+- [ ] Importar: "veem os de baixo" e "veem os de cima" vêm **ligados**; andares de 3 em 3 m (0, 3, 6...).
+- [ ] Token: mudar a elevação para **3 m** leva o token para o 2º andar; **6 m**, para o 3º; **0 m**, para o térreo. Ele aparece no andar certo e não "-3 m".
+- [ ] Escada/elevador: o token chega no andar com a elevação do chão dele (3 m, 6 m...).
+- [ ] Tile, luz, som, desenho e nota: pôr a elevação em 3 m leva para o 2º andar; mudar o andar pelo botão de andar leva a elevação junto.
+- [ ] Criar um token/tile vendo o 3º andar: ele já nasce com 6 m.
+- [ ] Objetos marcados em **vários** andares (ou em todos) não são mexidos.
+- [ ] **Acertar elevações**: o que estava num andar com a elevação fora dele vai para o chão do andar (a mensagem diz quantos).
+- [ ] Vendo o 3º andar, um token do térreo só aparece se estiver mesmo no térreo (0 m) — e o ícone das portas de baixo não aparece.
 
 ## 1.9.6 — andares fechados por padrão; elevação do token muda o andar
 
