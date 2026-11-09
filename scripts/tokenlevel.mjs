@@ -21,6 +21,9 @@ export function installTokenLevelFix() {
       const patch = levelSyncPatch(levelsOf(scene), { single, doc: { level: src.level, levels: src.levels, elevation: src.elevation } });
       if (Object.keys(patch).length) doc.updateSource(patch);
     });
+    // Token: no V13/V14 mexer na elevação/andar dentro do preUpdateToken quebra o movimento (o token não sai do lugar).
+    // Para tokens, o acerto é feito depois, por quem fez a mudança (installAfterUpdate).
+    if (type === "Token") continue;
     Hooks.on(`preUpdate${type}`, (doc, changes) => {
       const src = doc._source ?? doc;
       const patch = levelSyncPatch(levelsOf(doc.parent), {
@@ -32,17 +35,30 @@ export function installTokenLevelFix() {
 }
 
 /**
- * Rede de segurança: se o andar do token mudou por um caminho que não passou pela regra acima
- * (ex.: movimento do V14 que grava o andar depois), quem fez a mudança acerta a elevação.
+ * Tokens: depois que o andar ou a elevação mudou, quem fez a mudança acerta o outro valor
+ * com uma segunda atualização (o movimento do token não pode ser alterado no preUpdateToken).
+ * - mudou o andar (botão de andar, escada, elevador) → elevação vai para o chão do andar novo;
+ * - mudou só a elevação → o token vai para o andar daquela altura.
  */
 function installAfterUpdate() {
+  const busy = new Set();
   Hooks.on("updateToken", (doc, changes, options, userId) => {
-    if (userId !== game.user?.id || !("level" in changes)) return;
+    if (userId !== game.user?.id) return;
+    const lvl = "level" in changes, elev = "elevation" in changes;
+    if (!lvl && !elev) return;
+    if (busy.has(doc.id)) return;
     const src = doc._source ?? doc;
-    const patch = levelSyncPatch(levelsOf(doc.parent), { single: true, doc: { level: src.level, elevation: src.elevation } });
-    if (patch.elevation !== undefined && patch.elevation !== src.elevation) {
-      doc.update({ elevation: patch.elevation }).catch((err) => console.warn("dd2vtt-url-importer | elevação do token", err));
-    }
+    const cur = { level: src.level, elevation: src.elevation };
+    const patch = lvl
+      ? levelSyncPatch(levelsOf(doc.parent), { single: true, doc: cur })
+      : levelSyncPatch(levelsOf(doc.parent), { single: true, doc: cur, changes: { elevation: src.elevation } });
+    if (patch.elevation !== undefined && patch.elevation === src.elevation) delete patch.elevation;
+    if (patch.level !== undefined && patch.level === src.level) delete patch.level;
+    if (!Object.keys(patch).length) return;
+    busy.add(doc.id);
+    doc.update(patch, { dd2vttLevelSync: true })
+      .catch((err) => console.warn("dd2vtt-url-importer | andar/elevação do token", err))
+      .finally(() => busy.delete(doc.id));
   });
 }
 

@@ -1,6 +1,13 @@
-# DD2VTT URL Importer 1.9.10 + mod "Exportar para Foundry (Nauren)" 1.0.5 — testes
+# DD2VTT URL Importer 1.9.11 + mod "Exportar para Foundry (Nauren)" 1.0.5 — testes
 
 Ciclo atual: andares (visão entre andares, andares de cima em fade, iluminação global), escadas e elevadores. Marque o que passou e mande o erro do console (F12) do que falhar.
+
+## 1.9.11 — botão de andar do token voltou a funcionar
+
+- [ ] Menu do token (clique direito) → botão de **andares** → **Andar 1**: o token sobe e fica com elevação **3**.
+- [ ] Mesmo botão → **Térreo**: desce e fica com **0**.
+- [ ] Mudar a elevação à mão para 3 / 0 leva o token para o andar certo.
+- [ ] Escada/elevador continuam funcionando.
 
 ## 1.9.10 — tokens de cima seguem a imagem do andar de cima
 
