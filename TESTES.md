@@ -1,6 +1,14 @@
-# DD2VTT URL Importer 1.9.8 + mod "Exportar para Foundry (Nauren)" 1.0.5 — testes
+# DD2VTT URL Importer 1.9.9 + mod "Exportar para Foundry (Nauren)" 1.0.5 — testes
 
 Ciclo atual: andares (visão entre andares, andares de cima em fade, iluminação global), escadas e elevadores. Marque o que passou e mande o erro do console (F12) do que falhar.
+
+## 1.9.9 — tokens do andar de cima aparecendo embaixo
+
+- [ ] Jogador vendo o **Chão da selva**: os tokens dos **Galhos** (+3 m) não aparecem (nem barras, nem nome).
+- [ ] Jogador vendo os **Galhos**: vê os tokens dos Galhos e os do chão lá embaixo.
+- [ ] O token que você controla nunca some, mesmo que esteja em outro andar.
+- [ ] Ao subir de andar, os tokens de cima voltam a aparecer na hora.
+- [ ] Configurações do módulo → "Tokens dos andares de cima vistos de baixo" = **Mostrar** volta a mostrar tudo (vale só para quem mudou).
 
 ## 1.9.8 — botão de andar do token leva a elevação junto
 
