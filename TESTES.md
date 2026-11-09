@@ -1,6 +1,18 @@
-# DD2VTT URL Importer 1.9.9 + mod "Exportar para Foundry (Nauren)" 1.0.5 — testes
+# DD2VTT URL Importer 1.9.10 + mod "Exportar para Foundry (Nauren)" 1.0.5 — testes
 
 Ciclo atual: andares (visão entre andares, andares de cima em fade, iluminação global), escadas e elevadores. Marque o que passou e mande o erro do console (F12) do que falhar.
+
+## 1.9.10 — tokens de cima seguem a imagem do andar de cima
+
+Vendo o **Chão da selva** (andar de baixo):
+- [ ] Imagem dos **Galhos** aparecendo (mouse fora, seu token fora da área coberta): os tokens dos Galhos aparecem em cima dela.
+- [ ] Passar o mouse sobre os Galhos (a imagem some): os tokens dos Galhos somem junto.
+- [ ] Seu token embaixo dos Galhos (a imagem some): os tokens dos Galhos somem.
+- [ ] Junto com o token somem a borda, as barras, os ícones de condição e a moldura do Nauren — nada fica "flutuando".
+- [ ] Tirar o mouse: tokens e moldura voltam junto com a imagem.
+- [ ] Vendo os **Galhos**: tokens dos Galhos sempre aparecem.
+- [ ] O token que você controla nunca some.
+- [ ] Configurações → "Tokens dos andares de cima vistos de baixo" = **Sempre mostrar** deixa todos visíveis.
 
 ## 1.9.9 — tokens do andar de cima aparecendo embaixo
 

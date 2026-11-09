@@ -8,7 +8,7 @@
 // da construção). Nada é gravado na cena: é só como a tela desenha.
 
 import { MODULE_ID } from "./library.mjs";
-import { bottomOf, stepAlpha, opaqueTester, shouldFade, sameSrc, levelForElevation } from "./levels.mjs";
+import { bottomOf, stepAlpha, opaqueTester, shouldFade, sameSrc, levelForElevation, upperTokenHidden } from "./levels.mjs";
 
 const state = new WeakMap();      // mesh → { a, touched }
 const owner = new WeakMap();      // mesh → Level (cache)
@@ -26,9 +26,9 @@ export function installUpperFade() {
   });
   game.settings.register(MODULE_ID, "upperTokens", {
     name: "Tokens dos andares de cima vistos de baixo",
-    hint: "Vendo um andar de baixo, os tokens que estão em andares de cima (ex.: +3 m) ficam escondidos — o chão de cima fica entre eles e você. \"Mostrar\" deixa ver todos. Vale só para você.",
+    hint: "Vendo um andar de baixo: os tokens do andar de cima aparecem enquanto a imagem dele aparece e somem junto com ela (mouse em cima ou seu token embaixo). \"Sempre mostrar\" deixa ver todos. Vale só para você.",
     scope: "client", config: true, type: String, default: "hide",
-    choices: { hide: "Esconder", show: "Mostrar" }
+    choices: { hide: "Seguir o andar de cima", show: "Sempre mostrar" }
   });
   game.settings.register(MODULE_ID, "upperFadeAlpha", {
     name: "Andar de cima: quanto fica visível quando some",
@@ -188,27 +188,33 @@ function tick() {
   if (!viewed || sceneLevelList().length < 2) return;
   const below = new Set(sceneLevelList().filter((l) => bottomOf(l) < vb).map((l) => l.id));
   applyToPlaceables(levelAlpha, below);
-  applyToTokens(vb, setting("upperTokens", "hide") === "hide");
+  applyToTokens(vb, setting("upperTokens", "hide") === "hide", levelAlpha);
 }
 
 const tokenState = new WeakMap();  // token → { hidden }
 
-/** Bottom do andar de um token (pelo andar dele; se não tiver, pela elevação). */
-function tokenLevelBottom(t, levels) {
+/** Andar de um token (pelo andar dele; se não tiver, pela elevação). */
+function tokenLevel(t, levels) {
   const id = t.document?.level?.id ?? t.document?.level ?? t.document?._source?.level;
-  const l = (id && levels.find((x) => x.id === id)) || levelForElevation(levels, t.document?.elevation ?? 0);
-  return l ? bottomOf(l) : 0;
+  return (id && levels.find((x) => x.id === id)) || levelForElevation(levels, t.document?.elevation ?? 0);
 }
 
 /**
- * Tokens de andares acima do que você está vendo ficam escondidos (o chão de cima fica entre eles e você).
- * Os tokens que você controla nunca são escondidos. Ao parar de esconder, o Foundry volta a decidir.
+ * Tokens de andares acima do que você está vendo seguem a imagem do andar deles:
+ * - imagem de cima aparecendo (você olha o telhado/piso de cima) → o token aparece em cima dela;
+ * - imagem sumiu (mouse em cima ou seu token embaixo) ou nem é desenhada daqui → o token some.
+ * Esconde o token inteiro (arte, borda, barras, condições e a moldura do Nauren, que só é
+ * desenhada quando a arte é). Os tokens que você controla nunca somem. Ao parar, o Foundry volta a decidir.
  */
-function applyToTokens(vb, hide) {
+function applyToTokens(vb, hide, levelAlpha = new Map()) {
   const levels = sceneLevelList();
   for (const t of canvas.tokens?.placeables ?? []) {
     const st = tokenState.get(t) ?? { hidden: false };
-    const should = hide && !t.controlled && tokenLevelBottom(t, levels) > vb + 1e-6;
+    let should = false;
+    if (hide && !t.controlled) {
+      const l = tokenLevel(t, levels);
+      if (l && bottomOf(l) > vb + 1e-6) should = upperTokenHidden(levelAlpha.get(l.id));
+    }
     if (should) {
       t.visible = false;
       if (t.mesh) t.mesh.visible = false;

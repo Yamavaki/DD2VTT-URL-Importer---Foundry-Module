@@ -395,3 +395,11 @@ export function levelSyncPatch(levels, { single, doc, changes = null }) {
   }
   return {};
 }
+
+/**
+ * Token de um andar acima do visto: some quando a imagem do andar dele não está aparecendo.
+ * alpha = transparência atual da imagem desse andar (undefined = a imagem não é desenhada daqui).
+ */
+export function upperTokenHidden(alpha) {
+  return !(Number.isFinite(alpha) && alpha >= 0.5);
+}
